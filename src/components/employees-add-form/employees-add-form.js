@@ -19,6 +19,9 @@ class EmployeesAddForm extends Component {
 
     onSubmit = (e) => {
         e.preventDefault();
+        if (this.state.name.length < 3 || !this.state.salary) {
+            alert("Заполните поля новыго сотрудника")
+        };
         this.props.onAdd(this.state.name, this.state.salary);
         this.setState({
             name: '',
