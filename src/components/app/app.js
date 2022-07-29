@@ -56,7 +56,6 @@ class App extends Component{
         })
     }
 
-
     render() {
         const allSlaves = this.state.data.length;
         const fistingSlaves = this.state.data.filter(item => item.increase).length;
