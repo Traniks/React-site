@@ -13,10 +13,12 @@ class App extends Component{
         super(props);
         this.state = {
             data: [
-                {name: "Mr.Van", salary: 300, increase: false, like: true, id: 1},
-                {name: "Danny Lee", salary: 200, increase: true, like: false, id: 2},
-                {name: "Billy Herrington", salary: 1000, increase: false, like: false, id: 3}
-            ]
+                {name: "Mr.Van", salary: 300, increase: true, rise: true, id: 1},
+                {name: "Danny Lee", salary: 200, increase: false, rise: false, id: 2},
+                {name: "Billy Herrington", salary: 1000, increase: false, rise: false, id: 3}
+            ],
+            term: "",
+            filter: "all"
         }
         this.maxId = 4
     }
@@ -40,12 +42,37 @@ class App extends Component{
         }))
     }
 
+    searchEmp = (items, term) => {
+        if (term.length === 0) {
+            return items;
+        }
+
+        return items.filter(item => {
+            return item.name.indexOf(term) > -1
+        })
+    }
+
+    onUpdateSeacrh = (term) => {
+        this.setState({term})
+    }
+
+    filterPost = (items, filter) => {
+        switch (filter) {
+            case "rise":
+                return items.filter(item => item.rise)
+            case "300$":
+                return items.filter(item => item.salary >= 300)
+            default:
+                return items
+        }
+    }
+
     addItem = (name, salary) => {
         const newItem = {
             name,
             salary,
             increase: false,
-            like: false,
+            rise: false,
             id: this.maxId++
         }
         this.setState(({data}) => {
@@ -56,9 +83,16 @@ class App extends Component{
         })
     }
 
+    onFilterSelect = (filter) => {
+        this.setState({filter});
+    }
+
     render() {
-        const allSlaves = this.state.data.length;
-        const fistingSlaves = this.state.data.filter(item => item.increase).length;
+        const {data, term, filter} = this.state
+        const allSlaves = data.length;
+        const fistingSlaves = data.filter(item => item.increase).length;
+        const visibleData = this.filterPost(this.searchEmp(data, term), filter);
+
         return (
             <div className="app">
                 <AppInfo 
@@ -66,12 +100,14 @@ class App extends Component{
                 fistingSlaves={fistingSlaves}/>
 
                 <div className="search-panel">
-                    <SearchPanel/>
-                    <AppFilter/>
+                    <SearchPanel
+                    onUpdateSeacrh={this.onUpdateSeacrh}/>
+                    <AppFilter filter={filter}
+                    onFilterSelect={this.onFilterSelect}/>
                 </div>
 
                 <EmployeesList 
-                    data={this.state.data}
+                    data={visibleData}
                     onDelete={this.deleteItem}
                     onToggleProp={this.onToggleProp}/>
                 <EmployeesAddForm 
